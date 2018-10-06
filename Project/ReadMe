@@ -1,0 +1,41 @@
+REFERENCES
+
+Third party libraries:
+https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css 
+https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css 
+https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js 
+https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js 
+https://d3js.org/topojson.v1.js 
+https://d3js.org/world-50m.v1.json 
+
+WorldMap:
+https://www.youtube.com/watch?v=dJbpo8R47D0 
+https://www.youtube.com/watch?v=aNbgrqRuoiE&t=1056s 
+https://developers.google.com/public-data/docs/canonical/countries_csv 
+http://www.mapcoordinates.net/en 
+https://www.youtube.com/watch?v=aNbgrqRuoiE&t=1058s 
+
+PieChart
+http://bl.ocks.org/enjalot/1203641
+https://bl.ocks.org/mbostock/3887235
+https://www.youtube.com/watch?v=ideI-h03ZKE 
+
+Line Chart
+https://bl.ocks.org/mbostock/3883245
+https://bl.ocks.org/mbostock/3884955
+http://bl.ocks.org/asielen/44ffca2877d0132572cb
+https://www.youtube.com/watch?v=T7KUZfwbYaA
+
+Bubble Chart
+https://bl.ocks.org/mbostock/4063269
+https://www.youtube.com/watch?v=lPr60pexvEM&t=600s 
+https://bl.ocks.org/HarryStevens/f636199a46fc4b210fbca3b1dc4ef372
+https://bl.ocks.org/alokkshukla/3d6be4be0ef9f6977ec6718b2916d168
+
+Bar Chart
+http://bl.ocks.org/d3noob/7030f35b72de721622b8
+https://bl.ocks.org/mbostock/3885304
+https://bost.ocks.org/mike/bar/
+http://bl.ocks.org/jonahwilliams/2f16643b999ada7b1909 
+
+
