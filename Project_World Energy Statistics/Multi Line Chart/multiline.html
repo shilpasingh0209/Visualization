@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rate of Energy Consumption</title>
+    <link rel="stylesheet" type="text/css" href="multiline.css">
+    <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+    <head>
+<style>
+    #title {
+    background-color:  #F1DF2B;
+    color : black;
+    padding: 10px;
+    text-align: center;
+    font-family: sans-serif;
+}
+body {
+ background-color:white;
+ text-align: center;
+ font-family: sans-serif;
+}
+</style>
+</head>
+<body>
+ <h1 class = "navbar" id="title">Rate of Energy Consumption</h1>
+    <h5 align="center">Hover over the chart lines to get detail information of energy consumption in top five countries with highest usage.</h5>
+<div class="line-wrapper" id="chart-line1"></div>
+
+<script type="text/javascript">
+    d3.csv('https://gist.githubusercontent.com/shilpa0209/8dd69d36e19046572a756280d66926e5/raw/37c78997bd8f975073260cd986edb3d1d916ecdd/Top5.csv', function(error, data) {
+    data.forEach(function (d) {
+        d.year = +d.YearEnergyProductionTotal;
+        d.China = +d.China;
+        d.UnitedStates = +d.UnitedStates;
+        d.Russia = +d.Russia;
+        d.SaudiArabia = +d.SaudiArabia;
+        d.India = +d.India;
+    });
+
+    var chart = Chart(data, 'YearEnergyProductionTotal', {
+        'China': {column: 'China'},
+        'United States': {column: 'UnitedStates'},
+        'Russia': {column: 'Russia'},
+        'Saudi Arabia': {column: 'SaudiArabia'},
+        'India': {column: 'India'}
+    }, {xAxis: 'Years', yAxis: 'Amount'});
+    chart.bind("#chart-line1");
+    chart.render();
+});
+
+function Chart(dataset, xName, yObject, axisLables) {
+    var Object = {};
+var color = d3.scale.ordinal()
+      .range(["#F4F815", "#F660E4" , "#FD0F03","#1ACBEE","#1AEE5B"]);
+    Object.data = dataset;
+
+
+    Object.margin = {top: 15, right: 60, bottom: 30, left: 55};
+    Object.width = 650 - Object.margin.left - Object.margin.right;
+    Object.height = 480 - Object.margin.top - Object.margin.bottom;
+
+    Object.xlabel = axisLables.xAxis;
+    Object.ylabel = axisLables.yAxis;
+
+    Object.xFunct = function(d){return d[xName]};
+
+//Function for each argument of object
+    function getYFn(column) {
+        return function (d) {
+            return d[column];
+        };
+    }
+
+// Object instead of array
+    Object.yFuncts = [];
+    for (var y  in yObject) {
+        yObject[y].name = y;
+        yObject[y].yFunct = getYFn(yObject[y].column); //Need this  list for the ymax function
+        Object.yFuncts.push(yObject[y].yFunct);
+    }
+
+//Formatter functions for the axes
+    Object.formatAsNumber = d3.format(".0f");
+    Object.formatAsDecimal = d3.format(".2f");
+    Object.formatAsCurrency = d3.format("$.2f");
+    Object.formatAsFloat = function (d) {
+        if (d % 1 !== 0) {
+            return d3.format(".2f")(d);
+        } else {
+            return d3.format(".0f")(d);
+        }
+        
+    };
+
+    Object.bisectYear = d3.bisector(Object.xFunct).left; 
+
+//Setting the scale
+    Object.xScale = d3.scale.linear().range([0, Object.width]).domain(d3.extent(Object.data, Object.xFunct)); 
+
+//Fetch the max of each function
+    Object.max = function (fn) {
+        return d3.max(Object.data, fn);
+    };
+    Object.yScale = d3.scale.linear().range([Object.height, 0]).domain([0, d3.max(Object.yFuncts.map(Object.max))]);
+
+    Object.formatAsYear = d3.format("");
+    Object.xForm = Object.formatAsNumber;
+    Object.yForm = Object.formatAsFloat;
+
+//Create axis
+    Object.yAxis = d3.svg.axis().scale(Object.yScale).orient("left").tickFormat(Object.yForm);
+
+    Object.xAxis = d3.svg.axis().scale(Object.xScale).orient("bottom").tickFormat(Object.xForm); 
+
+// Build line building functions
+    function getYScale(yObj) {
+        return function (d) {
+            return Object.yScale(yObject[yObj].yFunct(d));
+        };
+    }
+    for (var yObj in yObject) {
+        yObject[yObj].line = d3.svg.line().interpolate("cardinal").x(function (d) {
+            return Object.xScale(Object.xFunct(d));
+        }).y(getYScale(yObj));
+    }
+
+    Object.svg;
+
+// Change chart size according to window size
+
+    Object.bind = function (selector) {
+        
+        Object.mainDiv = d3.select(selector);
+        // Add all the divs to make it centered and responsive
+        Object.mainDiv.append("div")
+                        .attr("class", "inner-wrapper")
+                        .append("div")
+                        .attr("class", "outer-box")
+                        .append("div")
+                        .attr("class", "inner-box");
+
+        chartSelector = selector + " .inner-box";
+        Object.chartDiv = d3.select(chartSelector);
+        d3.select(window).on('resize.' + chartSelector, Object.UpdateSize);
+        Object.UpdateSize();
+        return Object;
+    };
+
+    Object.UpdateSize = function () {
+        Object.width = parseInt(Object.chartDiv.style("width"), 10) - (Object.margin.left + Object.margin.right);
+
+        Object.height = parseInt(Object.chartDiv.style("height"), 10) - (Object.margin.top + Object.margin.bottom);
+
+        /* Update the range of the scale with new width/height */
+        Object.xScale.range([0, Object.width]);
+        Object.yScale.range([Object.height, 0]);
+
+        if (!Object.svg) {return false;}
+
+        /* Else Update the axis with the new scale */
+         Object.svg.select('.x.axis')
+                    .attr("transform", "translate(0," + Object.height + ")")
+                    .call(Object.xAxis);
+        Object.svg.select('.y.axis')
+                    .call(Object.yAxis);
+             
+        Object.svg.select('.x.axis .label')
+                    .attr("x", Object.width / 2);
+        Object.svg.select('.y.axis .label')
+                    .attr("x", -Object.height / 2);
+
+
+
+        /* Force D3 to recalculate and update the line */
+        for (var y  in yObject) {
+            yObject[y].path.attr("d", yObject[y].line);
+        }
+        d3.selectAll(".point.line")
+            .attr("y2", Object.height);
+
+        Object.chartDiv.select('svg')
+                        .attr("width", Object.width + (Object.margin.left + Object.margin.right))
+                        .attr("height", Object.height + (Object.margin.top + Object.margin.bottom));
+
+        //**** Object.svg.select(".overlay").attr("width", Object.width).attr("height", Object.height);
+        //******* return Object;
+    };
+
+
+
+// Render the chart
+    Object.render = function () {
+        //Create SVG element
+        Object.svg = Object.chartDiv.append("svg")
+                                    .attr("class", "chart-area")
+                                    .attr("width", Object.width + (Object.margin.left + Object.margin.right))
+                                    .attr("height", Object.height + (Object.margin.top + Object.margin.bottom))
+                                    .append("g")
+                                    .attr("transform", "translate(" + Object.margin.left + "," + Object.margin.top + ")");
+
+        // Draw Lines
+        for (var y  in yObject) {
+            yObject[y].path = Object.svg.append("path")
+                                        .datum(Object.data)
+                                        .attr("class", "line")
+                                        .attr("d", yObject[y].line)
+                                        .style("stroke", color(y))
+                                        .attr("data-show", y)
+                                        .on("mouseover", function () {
+                                                point.style("display", null);
+                                                });
+            // .on("mouseout", function () {
+            //     point.transition().delay(700).style("display", "none");
+            // })
+            // .on("mousemove", mousemove);
+            }
+        
+
+        // Draw Axis
+        Object.svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + Object.height + ")")
+                .call(Object.xAxis)
+                .append("text")
+            //    .attr("class", "label")
+                .attr("x", Object.width / 2)
+                .attr("y", 30)
+                .style("text-anchor", "middle")
+                .text(Object.xlabel);
+
+        Object.svg.append("g")
+                .attr("class", "y axis")
+                .call(Object.yAxis)
+                .append("text")
+            //    .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+               .attr("y", 10)
+                .attr("x", -Object.height)
+                // .attr("dx", "-0.5em")
+                // .attr("dy", "-2.50em")
+                 .style("text-anchor", "middle");
+                // .text('Energy(toe)');
+
+        //Draw tooltips
+
+        var point = Object.svg.append("g")
+                                 .attr("class", "point") 
+                                 .style("display", "none");
+
+        for (var y  in yObject) {
+            yObject[y].tip = point.append("g");
+
+            yObject[y].tip.append("circle")
+                                .attr("r", 7);
+
+            yObject[y].tip.append("text")
+                                .attr("x", 9)
+                                .attr("dy", ".35em");
+        }
+
+        // Year label
+        point.append("text")
+                .attr("class", "point year")
+                .attr("x",  Object.width / 2)
+                .attr("y", 7)
+                .style("fill","F1DF2B");
+        // point line
+        // point.append("line")
+        //         .attr("class", "point line")
+        //         .attr("y1", 0)
+        //         .attr("y2", Object.height);
+
+        //Draw legend
+        var legend = Object.mainDiv.append('div')
+                            .attr("class", "legend");
+        
+        for (var y  in yObject) {
+            show = legend.append('div');
+            show.append('div')
+                    .attr("class", "show-marker")
+                    .style("background-color", color(y));
+            
+            show.append('p').text(y);
+            yObject[y].legend = show;
+            }
+
+        // Overlay to capture hover
+        Object.svg.append("rect")
+                    .attr("class", "overlay")
+                    .attr("width", Object.width)
+                    .attr("height", Object.height)
+                    .on("mouseover", function () {
+                        point.style("display", null);
+                        })
+                    .on("mouseout", function () {
+                        point.style("display", "none");
+                        })
+                    .on("mousemove", mousemove);
+
+        return Object;
+
+        function mousemove() {
+            var x0 = Object.xScale.invert(d3.mouse(this)[0]);
+            var i = Object.bisectYear(dataset, x0, 1);
+            var d0 = Object.data[i - 1], d1 = Object.data[i];
+            try {
+                var d = x0 - Object.xFunct(d0) > Object.xFunct(d1) - x0 ? d1 : d0;
+            } catch (e) { return;}
+            
+            minY = Object.height;
+            
+            for (var y  in yObject) {
+                yObject[y].tip.attr("transform", "translate(" + Object.xScale(Object.xFunct(d)) + "," + Object.yScale(yObject[y].yFunct(d)) + ")");
+
+                yObject[y].tip.select("text").text(Object.yForm(yObject[y].yFunct(d)));
+                minY = Math.min(minY, Object.yScale(yObject[y].yFunct(d)));
+            }
+
+            point.select(".point.line")
+                    .attr("transform", "translate(" + Object.xScale(Object.xFunct(d)) + ")")
+                    .attr("y1", minY);
+            point.select(".point.year")
+                    .text("Year: " + Object.xForm(Object.xFunct(d)));
+        }
+
+    };
+    return Object;
+}
+
+</script>
+</body>
+</html>

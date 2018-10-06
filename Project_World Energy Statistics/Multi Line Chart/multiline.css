@@ -1,0 +1,98 @@
+
+.line-wrapper {
+    max-width: 950px;
+    min-width: 304px;
+    margin: 0 auto;
+}
+
+
+.line-wrapper .axis path,
+.line-wrapper .axis line {
+    fill: none;
+    stroke: #1F1F2E;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.line-wrapper .inner-wrapper {
+    position: relative;
+    padding-bottom: 50%;
+    width: 100%;
+}
+
+.line-wrapper .inner-box {
+    width: 100%;
+    height: 100%;
+}
+
+.line-wrapper text {
+  font-size: 11px;
+}
+
+.line-wrapper p {
+    font-size: 11px;
+    margin-top:5px;
+    margin-bottom: 40px;
+}
+
+.line-wrapper .axis path {
+  stroke-width: 2px;
+}
+
+.line-wrapper .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+
+.line-wrapper .legend  {
+    min-width: 200px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    font-size: 16px;
+    padding: 10px 40px;
+}
+
+.line-wrapper .legend p {
+    display:inline;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+.line-wrapper .legend .show-marker {
+    height: 1em;
+    width: 1em;
+    background-color: green;
+    display: inline-block;
+    margin-bottom: -0.16rem;
+    margin-right: 4px;
+    border-radius: 35%;
+}
+
+.line-wrapper .point.line {
+    stroke-dasharray: 2,5;
+    stroke-width: 2;
+    opacity: 0.5;
+}
+.line-wrapper .overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+
+.line-wrapper .outer-box {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+}
+
+.line-wrapper .point rect {
+    fill: #F1DF2B;
+    opacity: 0.3;
+}
+
+.line-wrapper .point circle {
+  fill: #F1DF2B;
+  stroke: black;
+  stroke-width: 1.5px;
+  fill-opacity: 15%;
+}
