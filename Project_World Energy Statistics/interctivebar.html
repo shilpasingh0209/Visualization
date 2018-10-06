@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<style>
+#title {
+    background-color:  #F1DF2B;
+    color : black;
+    padding: 10px;
+    font-family: sans-serif;
+    text-align: center;
+}
+body {
+ background-color:white;
+ font-family: sans-serif;
+ text-align: center;
+}
+.rect {
+	fill: #F1DF2B;
+  stroke: black;
+  shape-rendering: crispEdges;
+
+}
+.rect:hover {
+	fill: #17BA10;
+	stroke: #000;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+</head>
+
+<body>
+<h1 class = "navbar" id="title"> DROPDOWN</h1>
+	  <h5>Click on the drop down menu to view different types of energy.</h5>
+<div id="bar" align=center></div>
+
+<script>
+
+	var m = {top: 80, right: 180, bottom: 80, left: 180};
+	var w = 1000 - m.left - m.right;
+	var h = 500 - m.top - m.bottom;
+
+
+	var svg = d3.select("body").append("svg")
+		.attr("width", w + m.left + m.right)
+	    .attr("height", h + m.top + m.bottom)
+		.append("g")
+	    .attr("transform", "translate(180," + m.top + ")");
+
+d3.csv("https://gist.githubusercontent.com/shilpa0209/078964484721a6bb84b18913b4f6dfd5/raw/6af68ea3035b7fc33a5ce5041a84f16ce32e298c/InteractiveChart.csv", function(error, data){
+	     if (error) 
+        console.error(error);
+			data.forEach(function(d){
+            d.OilConsumption = +d.OilConsumption;
+            d.CoalConsumption = +d.CoalConsumption;
+            d.EnergyProduced = +d.EnergyProduced;
+            d.NaturalGasConsumption = +d.NaturalGasConsumption;
+            d.EnergyConsumed = +d.EnergyConsumed;
+            d.HydroConsumed = +d.HydroConsumed;
+        });
+
+//Pick all the columns with energy data from file except year and country
+	var Xel = Object.keys(data[0])
+		.filter(function(d){
+			return ((d != "Year") & (d != "Country"));
+		});
+
+//setting the initial bar chart with column 0 i.e. energy produced data from the file
+	var s = Xel[0];
+	console.log(Xel);
+
+//scaling the xaxis and yaxis
+//country name on xaxis
+	var x = d3.scale.ordinal()
+			.domain(data.map(function(d){ return d.Country;}))
+			.rangeBands([0, w]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+	    .orient("bottom");
+//0 to max value from file on yaxis
+	var y = d3.scale.linear()
+			.domain([0, d3.max(data, function(d){
+				return +d[s];
+			})])
+			.range([h, 0]);
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+	    .orient("left");
+
+//Append axis to svg
+	svg.append("g")
+    	.attr("class", "x axis")
+    	.attr("transform", "translate(0," + h + ")")
+    	.call(xAxis)
+    	.selectAll("text")
+      	.attr("dx", "-.8em")
+      	.attr("dy", "-.55em")
+      	.attr("transform", "rotate(-90)" )
+       	.style("font-size", "10px")
+      	.style("text-anchor", "end");
+
+ 	svg.append("g")
+    	.attr("class", "y axis")
+    	.call(yAxis); 
+
+	svg.selectAll("rect")
+		.data(data)
+		.enter()
+		.append("rect")
+		.attr("class","rect")
+		.attr("width", w/data.length)
+		.attr("height", function(d){ return h - y(+d[s]); })
+		.attr("x", function(d, i){ return (w / data.length) * i; })
+		.attr("y", function(d){ return y(+d[s]); })
+		.append("title")
+		.text(function(d){ return d.Country + " : " + d[s]; });
+
+//creating the drop down and the bars for columns with energy data in the file
+	var p = d3.select("#bar")
+    	.append("select")
+    	.attr("id","dropdown")
+    	.on("change", function(d){
+        	s = document.getElementById("dropdown");
+
+        	y.domain([0, d3.max(data, function(d){
+				return +d[s.value];})]);
+
+        	yAxis.scale(y);
+
+        	d3.selectAll(".rect")
+           		.transition()
+           		.delay(300)
+	            .attr("height", function(d){
+					return h - y(+d[s.value]);
+				})
+				.attr("x", function(d, i){
+					return (w / data.length) * i ;
+				})
+				.attr("y", function(d){
+					return y(+d[s.value]);
+				})
+           		.select("title")
+           		.text(function(d){
+           			return d.Country + " : " + d[s.value];
+           		});
+      
+           	d3.selectAll("g.y.axis")
+           		.transition()
+           		.delay(300)
+           		.call(yAxis);
+
+         });
+
+//putting values in the drop down from the header in the file
+    p.selectAll("option")
+      .data(Xel)
+      .enter().append("option")
+      .attr("value", function(d){
+        return d;
+      })
+      .text(function(d){
+        return d;
+      })
+
+
+});
+
+</script>
+</body>
