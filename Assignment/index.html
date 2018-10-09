@@ -1,0 +1,501 @@
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <meta charset='utf-8'/>
+    <title> Assignment 1 </title>
+	<style>		
+.arc text {
+  font: 20px Impact;
+  text-anchor: middle;
+}
+
+.arc path {
+  stroke: #fff;
+} 
+</style>
+</head>
+
+<body>
+    <script>    
+        var width = 1000;
+        var height = 4100;                        
+        var canvas = d3.select("body").append("svg")
+                        .attr("width",width)
+                        .attr("height",height)
+                        .append("g")
+                        .attr("transform","translate(200,0)");
+	
+<!-- //FIRST BAR CHART  -->
+<!-- //FILES ON GIST.GITHUB -->
+		d3.csv("https://gist.githubusercontent.com/sh0209/fdb64472d988800e35c0086f058fe949/raw/1bc2f783606dde920f0c2f5f1a7709c015b80821/first.csv", function (data){
+						var rect = canvas.selectAll(".bar")
+                                .data(data)
+                                .enter()
+                                .append("rect")    
+                                    .attr("width",25)
+									.attr("height",function(d){return (d.gamers);})
+                                    .attr("x",function(d,i){return ((i*50)+110);})
+                                    .attr("y",function(d){return (690-d.gamers);})
+                                    .attr("fill","red")});
+									
+<!-- //JSON IS RETURNING THE DATA IN CONSOLE BUT THE BARS ARE NOT REEFLECTING IN THE WEB PAGE SO I HAVE USED CSV FILES FOR THE BAR CHARTS									 -->
+		<!-- <!-- d3.json("U.S. Computer and Video Game Sales.json", function (data){ --> -->
+						<!-- <!-- var rect = canvas.selectAll(".bar") --> -->
+                                <!-- <!-- .data(data) --> -->
+                                <!-- <!-- .enter() --> -->
+                                <!-- <!-- .append("rect")     --> -->
+                                    <!-- <!-- .attr("width",25) --> -->
+									<!-- <!-- .attr("height",function(d){return (d.gamers);}) --> -->
+                                    <!-- <!-- .attr("x",function(d,i){return ((i*50)+110);}) --> -->
+                                    <!-- <!-- .attr("y",function(d){return (690-d.gamers);}) --> -->
+                                    <!-- <!-- .attr("fill","red")}); --> -->
+									
+<!-- //SECOND BAR CHART	 -->
+		d3.csv("https://gist.githubusercontent.com/sh0209/ccd0a729c3d7cc3185c8c2662b7f1371/raw/fdd3d7968405af2634d80b2c33d8b6ec2891adce/second.csv", function (data){
+						var rect = canvas.selectAll(".bar")
+                                .data(data)
+                                .enter()
+                                .append("rect")    
+                                    .attr("width",50)
+									.attr("height",function(d){return (d.gamers);})
+                                    .attr("x",function(d,i){return ((i*90)+120);})
+                                    .attr("y",function(d){return (2380-d.gamers);})
+                                    .attr("fill","red")});
+<!-- //THIRD BAR CHART -->
+		d3.csv("https://gist.githubusercontent.com/sh0209/344a2b41c9a7d755146b55aca7747c37/raw/5a39ee6a1e73154db1da038f595906374814de02/third.csv", function (data){
+						var rect = canvas.selectAll(".bar")
+                                .data(data)
+                                .enter()
+                                .append("rect")
+                                .attr("width",function (d){return parseInt(d.physical)})
+								.attr("height",35)
+                                .attr("x", 110)
+                                .attr("y", function(d,i){return ((i*60 )+ 1135);})
+                                .attr("fill", "red");
+						var rect2 = canvas.selectAll(".bar")
+                                .data(data)
+                                .enter()
+                                .append("rect")
+                                .attr("width",function (d){return parseInt(d.digital)})
+								.attr("height",35)
+                                .attr("x",function(d){ return 110 + parseInt(d.physical); })
+                                .attr("y", function(d,i){return ((i*60 )+ 1135);} )
+                                .attr("fill","black");
+								});		
+<!-- ////AXIS -->
+<!-- //y axis -->
+		function yaxis(dt,k){		
+				var y1 = canvas.selectAll("text")
+					.data(dt)
+					.enter()
+						.append("text")
+						.attr("x",70)
+						.attr("y", function (d) {return d;})
+						.attr("font-family","Impact")
+						.attr("font-size", "18")
+						.text(function (d,i) {return i*k ;})
+			};
+				
+				var m = [690,630,570,510,450,390,330];		
+				var n = [2380,2300,2220,2140,2060];
+				yaxis(n,50);
+				yaxis(m,2);
+<!-- //x axis -->
+		function xaxis(dtx){
+					var v2 = canvas.selectAll("text")
+								.data(dtx)
+								.enter()
+									.attr("text")
+									.attr("x", function (d,i){ return (i*50)+110 ;})
+									.attr("y",600)
+									.attr("font-family","Impact")
+									.attr("font-size", "5")
+									.text(function (d,i) {return d;})
+			};
+			
+			var p=[2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011]
+			var q=[2011,2012,2013,2014,2015,2016]
+			<!-- //	xaxis(p) -->
+			<!-- //  xaxis(q) -->
+<!-- //////AXIS END	 -->
+
+								
+<!-- //Text function -->
+        function Text(X,Y,Text,pix,c){
+                    canvas.append("text")
+                                        .attr("x",X)
+                                        .attr("y",Y)
+                                        .attr("font-size",pix)
+                                        .attr("font-family","Impact") 
+                                        .attr("fill",c)
+                                        .text(Text);
+                                        }            
+<!-- //Line function -->
+        function Line(xa,ya,xb,yb,str,strw){
+                    canvas.append("line")
+                            .attr("x1",xa)
+                            .attr("y1",ya)
+                            .attr("x2",xb)
+                            .attr("y2",yb)
+                            .attr("stroke",str)
+                            .attr("stroke-width",strw);
+                            }
+<!-- //Image function -->
+        function Images(path,x,y,w,h){    
+                        canvas.append("image")
+                            .attr("xlink:href",path)
+                            .attr("x",x)
+                            .attr("y",y)
+                            .attr("width",w)
+                            .attr("height",h);
+                            }
+
+<!-- //Rectangle Function			  -->
+				function Rect(x,y,h,w,c){		
+					canvas.append("rect")
+					.attr("x", x)
+					.attr("y", y)
+					.attr("width", h)
+					.attr("height", w)
+					.attr("fill",c)};
+
+<!-- //FIRST PIE CHART -->
+		function pie1(){
+		var svg = d3.select("svg"),
+			w = +svg.attr("width"),
+			h = +svg.attr("height"),
+			r = Math.min(w, h) / 2,
+			g = svg.append("g").attr("transform", "translate(" + 450 + "," + 2950 + ")");
+		var color = d3.scaleOrdinal(["red","black","#D3D3D3"]);
+		var pie1 = d3.pie()
+			.sort(null)
+			.value(function(d) { return d.percentage; });
+		var path1 = d3.arc()
+			.outerRadius(100)
+			.innerRadius(0);
+		var label1 = d3.arc()
+			.outerRadius(100)
+			.innerRadius(30);
+		d3.csv("https://gist.githubusercontent.com/sh0209/093e34457046ae838bca5d512a079de1/raw/c2217b4a150dcbda8b8a0c821c1baffce3e5c566/pie1", function(d) {
+		  d.percentage = +d.percentage;
+		  return d;
+		}, function(error, data) {
+		  if (error) throw error;
+		  var arc1 = g.selectAll(".arc")
+			.data(pie1(data))
+			.enter().append("g")
+			  .attr("class", "arc");
+		  arc1.append("path")
+			  .attr("d", path1)
+			  .attr("fill", function(d) { return color(d.data.ratio); });
+		  arc1.append("text")
+			  .attr("transform", function(d) { return "translate(" + label1.centroid(d) + ")"; })
+			  .attr("dy", "0.35em")
+			  .style("fill","white")
+			  .style("text-anchor","middle")
+			  .attr("font-size",25)
+			  .text(function(d) { return d.data.ratio; });
+		})};
+
+<!-- //// SECOND PIE CHART-->
+			function pie2(){
+			var svg = d3.select("svg"),
+				w = +svg.attr("width"),
+				h = +svg.attr("height"),
+				r = Math.min(w, h) / 2,
+				g = svg.append("g").attr("transform", "translate(" + 770 + "," + 2950 + ")");
+			var color = d3.scaleOrdinal(["red","black","#D3D3D3"]);
+			var pie2 = d3.pie()
+				.sort(null)
+				.value(function(d) { return d.percentage; });
+			var path2 = d3.arc()
+				.outerRadius(100)
+				.innerRadius(0);
+			var label2 = d3.arc()
+				.outerRadius(100)
+				.innerRadius(30);
+			d3.csv("https://gist.githubusercontent.com/sh0209/9253e28b751f795ac233649f1358dbe1/raw/47dcec87684a334d957d82548f2b31eaf84722ec/pie2.csv", function(d) {
+			  d.percentage = +d.percentage;
+			  return d;
+			}, function(error, data) {
+			  if (error) throw error;
+			  var arc2 = g.selectAll(".arc")
+				.data(pie2(data))
+				.enter().append("g")
+				  .attr("class", "arc");
+					arc2.append("path")
+				  .attr("d", path2)
+				  .attr("fill", function(d) { return color(d.data.ratio); });
+					arc2.append("text")
+				  .attr("transform", function(d) { return "translate(" + label2.centroid(d) + ")"; })
+				  .attr("dy", "0.35em")
+				  .style("fill","white")
+				  .style("text-anchor","middle")
+				  .attr("font-size",25)
+				  .text(function(d) { return d.data.ratio; });
+			})};
+
+
+<!-- ////THIRD PIE CHART-->
+			function pie3(){
+			var svg = d3.select("svg");
+				g = svg.append("g").attr("transform", "translate(" + 400 + "," + 3500 + ")");
+			var color = d3.scaleOrdinal(["red","black","grey","#d3d3d3"]);
+			var pie3 = d3.pie()
+				.sort(null)
+				.value(function(d) { return d.percentage; });
+			var path3 = d3.arc()
+				.outerRadius(100)
+				.innerRadius(0);
+			var label3 = d3.arc()
+				.outerRadius(100)
+				.innerRadius(30);
+			d3.csv("https://gist.githubusercontent.com/sh0209/bd446400bb705f79cf49edf4ba51b889/raw/9a61d9988b8007b0e0aa897b35beb12fbda9d127/pie3.csv", function(d) {
+			  d.percentage = +d.percentage;
+			  return d;
+			}, function(error, data) {
+			  if (error) throw error;
+			  var arc3 = g.selectAll(".arc")
+				.data(pie3(data))
+				.enter().append("g")
+				  .attr("class", "arc");
+					arc3.append("path")
+				  .attr("d", path3)
+				  .attr("fill", function(d) { return color(d.data.ratio); });
+					arc3.append("text")
+				  .attr("transform", function(d) { if(d.data.ratio != 4.0) { return "translate(" + label3.centroid(d) + ")"; }})
+				  .attr("dy", "0.35em")
+				  .style("fill","white")
+				  .style("text-anchor","middle")
+				  .attr("font-size",25)
+				  .text(function(d) { return d.data.ratio; });
+			})};
+
+
+<!-- //Donut CHARTS -->
+		function donut1(){
+		var arc1 = d3.arc()
+						.innerRadius(48)
+						.outerRadius(60)
+						.startAngle(0)
+						.endAngle(4.55);
+					canvas.append("path")
+					.attr("d", arc1)
+					.attr("transform", "translate(110,1680)")
+					.attr("fill","red");
+				};
+
+		function donut2(){
+		var arc2 = d3.arc()
+						.innerRadius(48)
+						.outerRadius(60)
+						.startAngle(0)
+						.endAngle(4);
+					canvas.append("path")
+					.attr("d", arc2)
+					.attr("transform", "translate(240,1680)")
+					.attr("fill","red");
+						};
+						
+		function donut3(){			
+			var arc3 = d3.arc()
+						.innerRadius(48)
+						.outerRadius(60)
+						.startAngle(0)
+						.endAngle(2.5);
+					canvas.append("path")
+					.attr("d", arc3)
+					.attr("transform", "translate(360,1680)")
+					.attr("fill","red");
+				};
+
+		function donut4(){
+			var arc4 = d3.arc()
+						.innerRadius(48)
+						.outerRadius(60)
+						.startAngle(0)
+						.endAngle(2.3);
+					canvas.append("path")
+					.attr("d", arc4)
+					.attr("transform", "translate(480,1680)")
+					.attr("fill","red");
+					};
+	
+		function donut5(){
+			var arc5 = d3.arc()
+						.innerRadius(48)
+						.outerRadius(60)
+						.startAngle(0)
+						.endAngle(1.7);
+					canvas.append("path")
+					.attr("d", arc5)
+					.attr("transform", "translate(590,1680)")
+					.attr("fill","red");
+						};
+			
+        Images("image1.jpg",50,2,56,104);        
+        Images("image2.jpg",100,70,61,57);    
+        Images("image3.jpg",600,50,61,57);                        
+        Line(160,70,340,70,"Black",2);
+        Line(370,70,550,70,"Black",2); 
+		Images("star.jpg",345,62,20,20);    		
+        Text(110,50,"VIDEO GAMES: INDUSTRY IN TRANSTITION",32,"Black");
+        Text(50,150,"PHYSICAL RETAIL SALES",25,"Red");
+        Text(280,150,"OF COMPUTER AND VIDEO GAMES ARE",25,"Black");
+        Text(50,190,"CURRENTLY ON THEIR",25,"Black");
+        Text(260,190,"LOWEST LEVEL",25,"Red");
+        Text(400,190,"SINCE 2006.",25,"Black");
+        Text(50,260,"U.S. COMPUTER AND VIDEO GAME SALES (PHYSICAL RETAIL)",25,"Black");
+        Text(50,290,"in billion U.S. dollars",15,"Black");			
+		Line(100,330,680,330,"Black",0.5);
+		Images("image4.jpg",650,240,100,150);                        
+		Line(100,390,680,390,"Black",0.5);
+		Line(100,450,680,450,"Black",0.5);
+		Line(100,510,680,510,"Black",0.5);
+		Line(100,570,680,570,"Black",0.5);
+		Line(100,630,680,630,"Black",0.5);		
+		Line(100,690,680,690,"Black",2);
+		Text(70,450,"8",17,"Black")
+		Text(70,510,"6",17,"Black")
+		Text(70,570,"4",17,"Black")
+		Text(70,630,"2",17,"Black")
+		Text(70,690,"0",17,"Black")
+		Text(100,710,"2001","Black",0.2)
+		Text(150,710,"2002","Black",0.2)
+		Text(200,710,"2003","Black",0.2)
+		Text(250,710,"2004","Black",0.2)
+		Text(300,710,"2005","Black",0.2)
+		Text(350,710,"2006","Black",0.2)
+		Text(400,710,"2007","Black",0.2)
+		Text(450,710,"2008","Black",0.2)
+		Text(500,710,"2009","Black",0.2)
+		Text(550,710,"2010","Black",0.2)
+		Text(600,710,"2011","Black",0.2)
+		Text(50,900,"PHYSICAL SALES",25,"Red");
+		Text(215,900,"STILL MAKE UP",25,"Black");
+		Text(360,900,"THE LOIN'S SHARE",25,"Red");
+		Text(540,900,"OF GAMING",25,"Black");
+		Text(50,930,"SOFTWARE REVENUE, BUT",25,"Black");
+		Text(300,930,"DIGITAL DELIVERY",25,"Red");
+		Text(480,930,"IS BECOMING",25,"Black");
+		Text(50,960,"INCREASINGLY IMPORTANT.",25,"Red");
+		Text(50,1010,"DIGITAL VS. PHYSICAL SALES",25,"Black");
+		Text(50,1040,"in %",17,"Black");
+		Rect(505,1055,15,15,"Red");
+		Rect(525,1055,15,15,"Black");
+		Text(355,1070,"PHYSICAL FORMAT",20,"Black");
+		Text(550,1070,"DIGITAL FORMAT*",20,"Black");
+		Text(50,1155,"2009",17,"Black");
+		//Text(60,1155,"80",17,"White");
+		Text(50,1215,"2010",17,"Black");
+		Text(50,1275,"2011",17,"Black");
+		Text(50,1380,"*includes subscriptions, digital full games, add-on content,mobile apps and social net",17,"Black");
+		Text(50,1405,"work gaming",17,"Black");
+		Text(50,1455,"FOR NOW,",25,"Black");
+		Text(150,1455,"CONSOLES REMAIN THE MOST POPULAR",25,"Red");
+		Text(535,1455,"GAMING",25,"Black");
+		Text(50,1480,"DEVICES IN THE U.S.",25,"Black");
+		Text(50,1550,"U.S. HOUSEHOLDS THAT OWN AT LEAST ONE OF THE FOLLOWING",25,"Black");
+		Text(50,1575,"DEVICES PLAY GAMES ON THEIR.....",25,"Black");
+		Text(50,1595,"in %",17,"Black");
+		Images("image5.jpg",80,1630,56,88); 
+		Text(50,1680,"70",20,"Black");
+		donut1();
+		Images("image6.jpg",220,1630,56,88); 
+		Text(185,1705,"65",20,"Black");
+		donut2();
+		Images("image7.jpg",325,1640,56,88); 
+		Text(365,1739,"38",20,"Black");
+		donut3();
+		Images("image8.jpg",450,1630,56,88); 
+		Text(490,1725,"35",20,"Black");
+		donut4();
+		Images("image9.jpg",565,1630,56,88); 
+		Text(630,1708,"26",20,"Black");		
+		donut5();
+		Text(80,1780,"CONSOLE",18,"Black");
+		Text(220,1780,"PC",18,"Black");
+		Text(310,1780,"SMARTPHONES",18,"Black");
+		Text(460,1780,"DEDICATED",18,"Black");
+		Text(460,1800,"HANDHELD",18,"Black");
+		Text(460,1820,"SYSTEMS",18,"Black");
+		Text(580,1780,"WIRELESS",18,"Black");
+		Text(580,1800,"DEVICE",18,"Black");
+		Text(50,1880,"BUT",25,"Black");
+		Text(95,1880,"SMARTPHONE GAMING",25,"Red");
+		Text(318,1880,"IS EXPECTED TO GET BIGGER IN THE",25,"Black");
+		Text(50,1910,"NEW FEW YEAR.",25,"Black");
+		Text(50,1980,"U.S. MOBILE GAMES*",25,"Black");
+		Text(50,2010,"in millions",17,"Black");
+		Line(100,2060,680,2060,"Black",0.5);
+		Line(100,2140,680,2140,"Black",0.5);
+		Line(100,2220,680,2220,"Black",0.5);
+		Line(100,2300,680,2300,"Black",0.5);
+		Line(100,2380,680,2380,"Black",1);		
+		Images("image10.jpg",520,1985,56,88); 
+		Text(125,2410,"2011","Black",0.2);
+		Text(215,2410,"2012","Black",0.2);
+		Text(305,2410,"2013","Black",0.2);
+		Text(400,2410,"2014","Black",0.2);
+		Text(490,2410,"2015","Black",0.2);
+		Text(580,2410,"2016","Black",0.2);
+		Text(50,2500,"*mobile phone users who play games on mobile phones at least once per month",17,"Black");
+		Text(50,2580,"CASUAL GAMERS",25,"Red");
+		Text(220,2580,"ARE SHIFTING TO LOW-COST ONLINE AND SMART-",25,"Black");
+		Text(50,2615,"PHONE GAMES.",25,"Black");
+		Text(50,2700,"TYPES OF",25,"Black");
+		Text(145,2700,"ONLINE",25,"Red");
+		Text(220,2700,"GAMES",25,"Black");
+		Text(50,2730,"PLAYED MOST OFTEN",25,"Black");
+		Text(50,2760,"in %",17,"Black");
+		Text(495,2700,"TYPES OF",25,"Black");
+		Text(590,2700,"MOBILE",25,"Red");
+		Text(670,2700,"GAMES",25,"Black");
+		Text(542,2730,"PLAYED MOST OFTEN",25,"Black");
+		Text(710,2760,"in %",17,"Black")
+		pie1();
+		pie2();
+		Text(250,3135,"PUZZLE,BOARD GAME,GAME SHOW,TRIVIA,CARD GAMES",20,"Black");
+		Text(250,3165,"ACTION, SPORTS, STRATEGY, ROLE-PLAYING",20,"Black");
+		Text(250,3195,"OTHER",20,"Black");
+		Text(50,3270,"BUT VIDEO GAME SALES ARE STILL DRIVEN BY"	,25,"Black");
+		Text(480,3270,"CORE GAMERS",25,"red");
+		Text(620,3270,".",25,"Black");
+		Text(50,3325,"VIDEO GAME SALES 2011, BY GENRE",25,"Black");
+		Text(50,3348,"in %",17,"Black");
+		Rect(225,3120,15,15,"Red");
+		Rect(225,3150,15,15,"Black");
+		Rect(225,3180,15,15,"Grey");
+		Text(190,3395,"4.0",25,"Black");
+		pie3();
+		Text(400,3460,"CASUAL GAMES",17,"Black");
+		Text(400,3490,"ACTION, SPORTS,STARTEGY, ROLE-PLAYING",17,"Black");
+		Text(400,3520,"SHOOTER",17,"Black");
+		Text(400,3550,"OTHER",17,"Black");
+		Rect(380,3445,15,15,"Red");
+		Rect(380,3475,15,15,"Black");
+		Rect(380,3505,15,15,"Grey");
+		Rect(380,3535,15,15,"#d3d3d3");	
+		Text(50,3730,"SMARTPHONE GAMES SUCH AS ",25,"Black");
+		Text(350,3730,"ANGRY BIRDS CAN",25,"Red");
+		Text(50,3760,"BE EXTREMELY POPULAR",25,"Red");
+		Text(280,3760,", BUT",25,"Black");
+		Text(335,3760,"THE BIG MONEY",25,"Red");
+		Text(485,3760,"IS",25,"Black");
+		Text(50,3790,"STILL IN",25,"Black");
+		Text(130,3790,"TRADITIONAL VIDEO GAMES:",25,"Red");
+		Images("image11.jpg",560,3680,100,138);
+		Text(50,3850,"ROVIO, MAKER OF THE ANGRY BIRDS FRANCHISE, POSTED",25,"Black");
+		Text(50,3880,"$106.3 MILLION",25,"Red");
+		Text(205,3880,"REVENUE IN 2011.",25,"Black");
+		Text(50,3930,"CALL OF DUTY: MODERN WARFARE 3, THE BEST  SELLING VIDEO",25,"Black");
+		Text(50,3960,"GAME OF 2011, REACHED",25,"Black");
+		Text(285,3960,"$1 BILLION",25,"red");
+		Text(395,3960,"IN SALES AFTER 16 DAYS.",25,"Black");
+		Line(160,4000,340,4000,"Black",2);
+        Line(370,4000,550,4000,"Black",2);
+		Images("star.jpg",345,3992,20,20); 
+		Images("image12.jpg",50,3860,250,360);
+		Text(337,4040,"SOURCES: ENTERTAINMENT SOFTWARE ASSOCIATION,",17,"Black");
+		Text(335,4060,"NDP GROUP, ROVIO, ACTIVISION BLIZZARD, EMARKTER",17,"Black");
+		</script>
+</body>
